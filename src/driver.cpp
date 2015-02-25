@@ -66,6 +66,11 @@ int main(int argc, char **argv)
     std::string frame_id = "rgbd";
     nh_private.getParam("frame_id", frame_id);
 
+    double fx = 538.6725257330964;
+    double fy = 502.5794530135827;
+    nh_private.getParam("fx", fx);
+    nh_private.getParam("fy", fy);
+
     freenect_context *f_ctx;
     freenect_device *f_dev;
 
@@ -109,9 +114,9 @@ int main(int argc, char **argv)
     server.initialize("rgbd", rgbd::RGB_STORAGE_JPG, rgbd::DEPTH_STORAGE_PNG);
 
     geo::DepthCamera cam_model;
-    cam_model.setFocalLengths(554.2559327880068, 554.2559327880068);
+    cam_model.setFocalLengths(fx, fy);
     cam_model.setOpticalTranslation(0, 0);
-    cam_model.setOpticalCenter(320.5, 480.5);
+    cam_model.setOpticalCenter(319.5, 239.5);
 
     while (ros::ok())
     {
