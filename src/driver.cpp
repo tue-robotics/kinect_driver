@@ -60,7 +60,7 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "rgbd_transport_server");
+    ros::init(argc, argv, "kinect_driver");
 
     ros::NodeHandle nh_private("~");
     std::string frame_id = "rgbd";
@@ -85,17 +85,19 @@ int main(int argc, char **argv)
     freenect_select_subdevices(f_ctx, (freenect_device_flags)(FREENECT_DEVICE_CAMERA));
 
     int nr_devices = freenect_num_devices (f_ctx);
-    std::cout << "Number of devices found: " << nr_devices << std::endl;
+    std::cout << "[KINECT DRIVER] Number of devices found: " << nr_devices << std::endl;
 
     if (nr_devices < 1) {
         freenect_shutdown(f_ctx);
         return 1;
     }
 
+    std::cout << "[KINECT DRIVER] Opening device..." << std::endl;
+
     int user_device_number = 0;
     if (freenect_open_device(f_ctx, &f_dev, user_device_number) < 0)
     {
-        std::cout << "Could not open device" << std::endl;
+        std::cout << "[KINECT DIVER] Could not open device" << std::endl;
         freenect_shutdown(f_ctx);
         return 1;
     }
@@ -108,6 +110,8 @@ int main(int argc, char **argv)
     freenect_start_depth(f_dev);
     freenect_start_video(f_dev);
 
+    std::cout << "[KINECT DRIVER] Listening to video stream" << std::endl;
+
     // - - - - - - - - - - - - - - - - - - - - - - - -
 
     rgbd::Server server;
@@ -117,6 +121,8 @@ int main(int argc, char **argv)
     cam_model.setFocalLengths(fx, fy);
     cam_model.setOpticalTranslation(0, 0);
     cam_model.setOpticalCenter(319.5, 239.5);
+
+    std::cout << "[KINECT DRIVER] Up and running" << std::endl;
 
     while (ros::ok())
     {
