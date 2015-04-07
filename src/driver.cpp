@@ -6,6 +6,9 @@
 
 #include <rgbd/Server.h>
 
+#include <ros/init.h>
+#include <ros/node_handle.h>
+
 cv::Mat depth_image;
 cv::Mat rgb_image;
 
@@ -15,24 +18,21 @@ bool new_image_ = false;
 
 void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
-    depth_image = cv::Mat(480, 640, CV_32FC1, 0.0);
-
     uint16_t *depth = (uint16_t*)v_depth;
 
-    int i = 0;
-    for(int y = 0; y < 480; ++y)
+    for(int i = 0; i < depth_image.rows * depth_image.cols; ++i)
     {
-        for(int x = 0; x < 640; ++x)
-        {
-            if (depth[i] > 0)
-            {
-                float d = (float)depth[i] / 1000;
-                //            std::cout << d << std::endl;
-                depth_image.at<float>(y, x) = d;
-            }
-            ++i;
-        }
+        float d;
+        if (depth[i] > 0)
+            d = depth[i];// / 1000;
+        else
+            d = 0;
+        //            std::cout << d << std::endl;
+        depth_image.at<float>(i) = d;
     }
+
+
+    depth_image = depth_image / 1000;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -41,12 +41,10 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 {
     uint8_t *rgb_mid = (uint8_t*)rgb;
 
-    rgb_image = cv::Mat(480, 640, CV_8UC3, cv::Scalar(0, 0, 0));
-
     int i = 0;
-    for(int y = 0; y < 480; ++y)
+    for(int y = 0; y < rgb_image.rows; ++y)
     {
-        for(int x = 0; x < 640; ++x)
+        for(int x = 0; x < rgb_image.cols; ++x)
         {
             rgb_image.at<cv::Vec3b>(y, x) = cv::Vec3b(rgb_mid[i+2], rgb_mid[i+1], rgb_mid[i]);
             i += 3;
@@ -68,8 +66,12 @@ int main(int argc, char **argv)
 
     double fx = 538.6725257330964;
     double fy = 502.5794530135827;
+    bool high_resolution = false;
+    bool verbose = false;
     nh_private.getParam("fx", fx);
     nh_private.getParam("fy", fy);
+    nh_private.getParam("high_resolution", high_resolution);
+    nh_private.getParam("verbose", verbose);
 
     freenect_context *f_ctx;
     freenect_device *f_dev;
@@ -102,10 +104,22 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    freenect_frame_mode video_mode;
+
+    if (high_resolution)
+        video_mode = freenect_find_video_mode(FREENECT_RESOLUTION_HIGH, FREENECT_VIDEO_RGB);
+    else
+        video_mode = freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB);
+
+    freenect_frame_mode depth_mode = freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_REGISTERED);
+
+    rgb_image = cv::Mat(video_mode.height, video_mode.width, CV_8UC3, cv::Scalar(0, 0, 0));
+    depth_image = cv::Mat(depth_mode.height, depth_mode.width, CV_32FC1, 0.0);
+
     freenect_set_depth_callback(f_dev, depth_cb);
     freenect_set_video_callback(f_dev, rgb_cb);
-    freenect_set_video_mode(f_dev, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
-    freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_REGISTERED));
+    freenect_set_video_mode(f_dev, video_mode);
+    freenect_set_depth_mode(f_dev, depth_mode);
 
     freenect_start_depth(f_dev);
     freenect_start_video(f_dev);
@@ -138,13 +152,13 @@ int main(int argc, char **argv)
         if (new_image_)
         {
             rgbd::Image image(rgb_image, depth_image, cam_model, frame_id, ros::Time::now().toSec());
-            server.send(image);
+            server.send(image, true);
         }
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - -
 
-    std::cout << "Kinect stopped" << std::endl;
+    std::cout << "[KINECT DRIVER] Driver stopped" << std::endl;
 
     freenect_stop_depth(f_dev);
     freenect_stop_video(f_dev);
