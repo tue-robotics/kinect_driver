@@ -50,7 +50,7 @@ catkin_package(
 # ------------------------------------------------------------------------------------------------
 
 find_package(OpenCV REQUIRED)
-set(freenect_LIBRARIES /usr/lib/libfreenect.so)
+find_library(freenect_LIBRARIES NAMES libfreenect.so PATHS /usr/lib usr/lib/x86_64-linux-gnu)
 
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
