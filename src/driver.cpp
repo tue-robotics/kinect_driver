@@ -62,9 +62,7 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 bool srvSetSettings(kinect_driver::SetSettings::Request& req, kinect_driver::SetSettings::Response& res)
 {
-    if (req.time_offset > 0)
-        time_offset = req.time_offset;
-
+    time_offset = req.time_offset;
     return true;
 }
 
