@@ -21,18 +21,13 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 # Generate services
-# add_service_files(
-#    FILES
-#    service1.srv
-#    ...
-# )
+add_service_files(
+   FILES
+   SetSettings.srv
+)
 
 # Generate added messages and services with any dependencies listed here
-# generate_messages(
-#    DEPENDENCIES
-#    geometry_msgs
-#    ...
-# )
+generate_messages()
 
 # ------------------------------------------------------------------------------------------------
 #                                          CATKIN EXPORT

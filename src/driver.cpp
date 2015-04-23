@@ -9,10 +9,14 @@
 #include <ros/init.h>
 #include <ros/node_handle.h>
 
+#include <kinect_driver/SetSettings.h>
+
 cv::Mat depth_image;
 cv::Mat rgb_image;
 
 bool new_image_ = false;
+
+double time_offset = 0;
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -56,6 +60,17 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 // ----------------------------------------------------------------------------------------------------
 
+bool srvSetSettings(kinect_driver::SetSettings::Request& req, kinect_driver::SetSettings::Response& res)
+{
+    if (req.time_offset > 0)
+        time_offset = req.time_offset;
+
+    return true;
+}
+
+
+// ----------------------------------------------------------------------------------------------------
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "kinect_driver");
@@ -71,7 +86,10 @@ int main(int argc, char **argv)
     nh_private.getParam("fx", fx);
     nh_private.getParam("fy", fy);
     nh_private.getParam("high_resolution", high_resolution);
+    nh_private.getParam("time_offset", time_offset);
     nh_private.getParam("verbose", verbose);
+
+    ros::ServiceServer srv_set_settings = nh_private.advertiseService("set_settings", srvSetSettings);
 
     freenect_context *f_ctx;
     freenect_device *f_dev;
@@ -140,6 +158,9 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
+        // Check for service requests
+        ros::spinOnce();
+
         new_image_ = false;
 
         int res = freenect_process_events(f_ctx);
@@ -151,7 +172,8 @@ int main(int argc, char **argv)
 
         if (new_image_)
         {
-            rgbd::Image image(rgb_image, depth_image, cam_model, frame_id, ros::Time::now().toSec());
+            double time = ros::Time::now().toSec() + time_offset;
+            rgbd::Image image(rgb_image, depth_image, cam_model, frame_id, time);
             server.send(image, true);
         }
     }
