@@ -161,10 +161,20 @@ int main(int argc, char **argv)
 
         new_image_ = false;
 
-        int res = freenect_process_events(f_ctx);
+        int res;
+        try
+        {
+            res = freenect_process_events(f_ctx);
+        } 
+        catch (boost::thread_resource_error const &)
+        {
+            std::cout << "[KINECT DRIVER] boost::thread_resource_error catch, continue ..." << std::endl;
+            continue;
+        }
+
         if (res < 0 && res != -10)
         {
-            std::cout << "\nError " << res << " received from libusb - aborting." << std::endl;
+            std::cout << "[KINECT DRIVER] Error " << res << " received from libusb - aborting." << std::endl;
             return 1;
         }
 
