@@ -79,10 +79,14 @@ int main(int argc, char **argv)
 
     double fx = 538.6725257330964;
     double fy = 502.5794530135827;
+    double cx = 319.5;
+    double cy = 239.5;
     bool high_resolution = false;
     bool verbose = false;
     nh_private.getParam("fx", fx);
     nh_private.getParam("fy", fy);
+    nh_private.getParam("cx", cx);
+    nh_private.getParam("cy", cy);
     nh_private.getParam("high_resolution", high_resolution);
     nh_private.getParam("time_offset", time_offset);
     nh_private.getParam("verbose", verbose);
@@ -150,7 +154,7 @@ int main(int argc, char **argv)
     geo::DepthCamera cam_model;
     cam_model.setFocalLengths(fx, fy);
     cam_model.setOpticalTranslation(0, 0);
-    cam_model.setOpticalCenter(319.5, 239.5);
+    cam_model.setOpticalCenter(cy, cy);
 
     std::cout << "[KINECT DRIVER] Up and running" << std::endl;
 
