@@ -154,7 +154,7 @@ int main(int argc, char **argv)
     geo::DepthCamera cam_model;
     cam_model.setFocalLengths(fx, fy);
     cam_model.setOpticalTranslation(0, 0);
-    cam_model.setOpticalCenter(cy, cy);
+    cam_model.setOpticalCenter(cx, cy);
 
     std::cout << "[KINECT DRIVER] Up and running" << std::endl;
 
