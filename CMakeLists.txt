@@ -60,5 +60,5 @@ add_executable(kinect_driver
     src/driver.cpp
 )
 target_link_libraries(kinect_driver ${catkin_LIBRARIES} ${freenect_LIBRARIES} ${OpenCV_LIBRARIES})
-
+add_dependencies(kinect_driver ${PROJECT_NAME}_gencpp)
 
