@@ -108,14 +108,14 @@ int main(int argc, char **argv)
     freenect_select_subdevices(f_ctx, (freenect_device_flags)(FREENECT_DEVICE_CAMERA));
 
     int nr_devices = freenect_num_devices (f_ctx);
-    ROS_ERROR_STREAM("[KINECT DRIVER] Number of devices found: " << nr_devices);
+    ROS_INFO_STREAM("[KINECT DRIVER] Number of devices found: " << nr_devices);
 
     if (nr_devices < 1) {
         freenect_shutdown(f_ctx);
         return 1;
     }
 
-    ROS_ERROR_STREAM("[KINECT DRIVER] Opening device...");
+    ROS_INFO_STREAM("[KINECT DRIVER] Opening device...");
 
     int user_device_number = 0;
     if (freenect_open_device(f_ctx, &f_dev, user_device_number) < 0)
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
     freenect_start_depth(f_dev);
     freenect_start_video(f_dev);
 
-    ROS_ERROR_STREAM("[KINECT DRIVER] Listening to video stream");
+    ROS_INFO_STREAM("[KINECT DRIVER] Listening to video stream");
 
     // - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
     cam_model.setOpticalTranslation(0, 0);
     cam_model.setOpticalCenter(cx, cy);
 
-    ROS_ERROR_STREAM("[KINECT DRIVER] Up and running");
+    ROS_INFO_STREAM("[KINECT DRIVER] Up and running");
 
     while (ros::ok())
     {
