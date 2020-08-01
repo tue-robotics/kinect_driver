@@ -3,11 +3,9 @@ project(kinect_driver)
 
 find_package(catkin REQUIRED COMPONENTS
     rgbd
+    roscpp
+    sensor_msgs
 )
-
-# find_package(Boost REQUIRED COMPONENTS system program_options)
-# find_package(PCL REQUIRED)
-# find_package(OpenCV REQUIRED)
 
 # ------------------------------------------------------------------------------------------------
 #                                     ROS MESSAGES AND SERVICES

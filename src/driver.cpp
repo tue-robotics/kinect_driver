@@ -2,15 +2,21 @@
 
 #include <iostream>
 
+#include <image_geometry/pinhole_camera_model.h>
+
 #include <opencv2/core/core.hpp>
 
-#include <rgbd/Server.h>
+#include <rgbd/server.h>
 
 #include <ros/init.h>
 #include <ros/node_handle.h>
 #include <ros/console.h>
 
+#include <sensor_msgs/CameraInfo.h>
+#include <sensor_msgs/distortion_models.h>
+
 #include <kinect_driver/SetSettings.h>
+
 
 cv::Mat depth_image;
 cv::Mat rgb_image;
@@ -152,10 +158,18 @@ int main(int argc, char **argv)
     rgbd::Server server;
     server.initialize("rgbd", rgbd::RGB_STORAGE_JPG, rgbd::DEPTH_STORAGE_PNG);
 
-    geo::DepthCamera cam_model;
-    cam_model.setFocalLengths(fx, fy);
-    cam_model.setOpticalTranslation(0, 0);
-    cam_model.setOpticalCenter(cx, cy);
+    sensor_msgs::CameraInfo cam_info;
+    cam_info.K = {fx, 0.0, cx,
+                  0.0, fy, 240.5,
+                  0.0, 0.0, 1.0};
+    cam_info.P = {fx, 0.0, cx, 0.0,
+                  0.0, fy, cy, 0.0,
+                  0.0, 0.0, 1.0, 0.0};
+    cam_info.distortion_model = sensor_msgs::distortion_models::PLUMB_BOB;
+    cam_info.width = video_mode.width;
+    cam_info.height = video_mode.height;
+    image_geometry::PinholeCameraModel cam_model;
+    cam_model.fromCameraInfo(cam_info);
 
     ROS_INFO_STREAM("[KINECT DRIVER] Up and running");
 
