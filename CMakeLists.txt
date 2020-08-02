@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(kinect_driver)
 
+add_compile_options(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS
     rgbd
+    roscpp
+    sensor_msgs
 )
-
-# find_package(Boost REQUIRED COMPONENTS system program_options)
-# find_package(PCL REQUIRED)
-# find_package(OpenCV REQUIRED)
 
 # ------------------------------------------------------------------------------------------------
 #                                     ROS MESSAGES AND SERVICES
