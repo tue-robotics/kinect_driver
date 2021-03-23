@@ -1,13 +1,21 @@
-# Installation
+# kinect_driver
 
-## Dependencies
+[![CI](https://github.com/tue-robotics/kinect_driver/workflows/CI/badge.svg)](https://github.com/tue-robotics/kinect_driver/actions)
 
-    sudo add-apt-repository ppa:floe/libtisch
-    sudo apt-get update
-    sudo apt-get install libfreenect libfreenect-dev libfreenect-demos
+## Installation
+
+### Dependencies
+
+```bash
+sudo add-apt-repository ppa:floe/libtisch
+sudo apt-get update
+sudo apt-get install libfreenect libfreenect-dev libfreenect-demos
+```
 
 Check if it is working by running:
 
-    freenect-glview
+```bash
+freenect-glview
+```
 
-(source: http://openkinect.org/wiki/Getting_Started)
+(source: <http://openkinect.org/wiki/Getting_Started>)
