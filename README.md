@@ -1,6 +1,6 @@
 # kinect_driver
 
-[![CI](https://github.com/tue-robotics/kinect_driver/workflows/CI/badge.svg)](https://github.com/tue-robotics/kinect_driver/actions)
+[![CI](https://github.com/tue-robotics/kinect_driver/actions/workflows/main.yml/badge.svg)](https://github.com/tue-robotics/kinect_driver/actions/workflows/main.yml)
 
 ## Installation
 
