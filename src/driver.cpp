@@ -27,7 +27,7 @@ double time_offset = 0;
 
 // ----------------------------------------------------------------------------------------------------
 
-void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
+void depth_cb(freenect_device* /*dev*/, void* v_depth, uint32_t /*timestamp*/)
 {
     uint16_t *depth = (uint16_t*)v_depth;
 
@@ -42,13 +42,12 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
         depth_image.at<float>(i) = d;
     }
 
-
     depth_image = depth_image / 1000;
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
+void rgb_cb(freenect_device* /*dev*/, void* rgb, uint32_t /*timestamp*/)
 {
     uint8_t *rgb_mid = (uint8_t*)rgb;
 
@@ -67,7 +66,7 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool srvSetSettings(kinect_driver::SetSettings::Request& req, kinect_driver::SetSettings::Response& res)
+bool srvSetSettings(kinect_driver::SetSettings::Request& req, kinect_driver::SetSettings::Response& /*res*/)
 {
     time_offset = req.time_offset;
     return true;
@@ -215,4 +214,3 @@ int main(int argc, char **argv)
     freenect_close_device(f_dev);
     freenect_shutdown(f_ctx);
 }
-
